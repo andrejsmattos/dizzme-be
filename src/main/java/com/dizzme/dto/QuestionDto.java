@@ -8,6 +8,5 @@ public record QuestionDto(
         String text,
         List<String> options,
         Integer questionOrder,
-        Boolean required,
-        List<String> parsedOptions
+        Boolean required
 ) {}

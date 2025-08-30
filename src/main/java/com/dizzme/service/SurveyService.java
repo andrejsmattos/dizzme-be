@@ -212,30 +212,14 @@ public class SurveyService {
     }
 
     private QuestionDto mapQuestionToDto(Question question) {
-        String optionsJson = question.getOptions() != null ? String.join(",", question.getOptions()) : null;
-        List<String> parsedOptions = parseOptions(optionsJson);
-
         return new QuestionDto(
                 question.getId(),
                 question.getType().name(),
                 question.getText(),
-                Collections.singletonList(String.valueOf(question.getOptions())),
+                question.getOptions(),
                 question.getQuestionOrder(),
-                question.getRequired(),
-                parsedOptions
+                question.getRequired()
         );
-    }
-
-    private List<String> parseOptions(String optionsJson) {
-        if (optionsJson == null || optionsJson.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        try {
-            return objectMapper.readValue(optionsJson, new TypeReference<List<String>>() {});
-        } catch (JsonProcessingException e) {
-            return new ArrayList<>();
-        }
     }
 
     private String generatePublicId() {
