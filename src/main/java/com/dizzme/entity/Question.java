@@ -1,11 +1,12 @@
 package com.dizzme.entity;
 
+import com.dizzme.config.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.List;
+import java.util.List; // IMPORTANTE: Importe a classe List
 
 @Entity
 @Table(name = "questions")
@@ -28,7 +29,8 @@ public class Question {
     private String text;
 
     @Column(columnDefinition = "TEXT")
-    private String options; // JSON array for multiple choice options
+    @Convert(converter = StringListConverter.class)
+    private List<String> options;
 
     @Column(nullable = false)
     private Integer questionOrder;
@@ -63,8 +65,8 @@ public class Question {
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
 
-    public String getOptions() { return options; }
-    public void setOptions(String options) { this.options = options; }
+    public List<String> getOptions() { return options; }
+    public void setOptions(List<String> options) { this.options = options; }
 
     public Integer getQuestionOrder() { return questionOrder; }
     public void setQuestionOrder(Integer questionOrder) { this.questionOrder = questionOrder; }

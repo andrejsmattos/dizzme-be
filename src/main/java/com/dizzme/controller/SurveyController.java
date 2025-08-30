@@ -64,7 +64,7 @@ public class SurveyController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<SurveyDto>> updateSurvey(
             @PathVariable Long id,

@@ -6,7 +6,7 @@ public record QuestionDto(
         Long id,
         String type,
         String text,
-        String options,
+        List<String> options,
         Integer questionOrder,
         Boolean required,
         List<String> parsedOptions

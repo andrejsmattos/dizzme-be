@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -114,8 +115,13 @@ public class SurveyService {
             throw new BusinessException("Acesso negado");
         }
 
-        survey.setTitle(request.title());
-        survey.setDescription(request.description());
+        if (request.title() != null) {
+            survey.setTitle(request.title());
+        }
+
+        if (request.description() != null) {
+            survey.setDescription(request.description());
+        }
 
         if (request.active() != null) {
             survey.setActive(request.active());
@@ -206,13 +212,14 @@ public class SurveyService {
     }
 
     private QuestionDto mapQuestionToDto(Question question) {
-        List<String> parsedOptions = parseOptions(question.getOptions());
+        String optionsJson = question.getOptions() != null ? String.join(",", question.getOptions()) : null;
+        List<String> parsedOptions = parseOptions(optionsJson);
 
         return new QuestionDto(
                 question.getId(),
                 question.getType().name(),
                 question.getText(),
-                question.getOptions(),
+                Collections.singletonList(String.valueOf(question.getOptions())),
                 question.getQuestionOrder(),
                 question.getRequired(),
                 parsedOptions

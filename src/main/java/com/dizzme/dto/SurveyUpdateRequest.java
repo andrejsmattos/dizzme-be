@@ -8,7 +8,6 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record SurveyUpdateRequest(
-        @NotBlank(message = "Título é obrigatório")
         String title,
 
         String description,

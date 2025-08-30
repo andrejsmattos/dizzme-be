@@ -9,5 +9,7 @@ public enum QuestionType {
     LIKE_DISLIKE,    // Like/Dislike
     TEXT,            // Texto livre
     DROPDOWN,        // Lista suspensa
-    RADIO            // Radio button
+    RADIO,           // Radio button
+    RATING,
+    YES_NO
 }
