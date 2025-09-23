@@ -20,7 +20,7 @@ public class SurveyTemplateService {
                 "Modelo padrão para pesquisa NPS",
                 "satisfaction",
                 Arrays.asList(
-                        new QuestionTemplate("NPS", "Em uma escala de 0 a 10, o quanto você recomendaria nossa empresa/produto/serviço para um amigo ou colega?", null, true, 1),
+                        new QuestionTemplate("RATING", "Em uma escala de 0 a 10, o quanto você recomendaria nossa empresa/produto/serviço para um amigo ou colega?", null, true, 1),
                         new QuestionTemplate("TEXT", "O que é mais importante para melhorar sua avaliação?", null, false, 2)
                 )
         ));
@@ -31,7 +31,7 @@ public class SurveyTemplateService {
                 "Modelo para pesquisa de satisfação do cliente",
                 "satisfaction",
                 Arrays.asList(
-                        new QuestionTemplate("CSAT", "Como você avalia sua satisfação geral com nosso atendimento?", null, true, 1),
+                        new QuestionTemplate("RATING", "Como você avalia sua satisfação geral com nosso atendimento?", null, true, 1),
                         new QuestionTemplate("TEXT", "Deixe seus comentários ou sugestões:", null, false, 2)
                 )
         ));
@@ -42,7 +42,7 @@ public class SurveyTemplateService {
                 "Modelo para medir facilidade de uso/atendimento",
                 "effort",
                 Arrays.asList(
-                        new QuestionTemplate("CES", "O quanto foi fácil resolver seu problema hoje?", null, true, 1),
+                        new QuestionTemplate("RATING", "O quanto foi fácil resolver seu problema hoje?", null, true, 1),
                         new QuestionTemplate("MULTIPLE_CHOICE", "Qual canal você utilizou?",
                                 "[\"Telefone\", \"Email\", \"Chat\", \"WhatsApp\", \"Presencial\"]", true, 2)
                 )
