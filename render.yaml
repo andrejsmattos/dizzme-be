@@ -1,23 +1,29 @@
-# `render.yaml` - Configuração para o Render Blueprint
-
-# Este arquivo define os serviços que o Render irá criar e gerenciar
-# para sua aplicação.
+# render.yaml
 
 services:
+  # ... (dizzme-postgres service aqui)
+
   # Serviço para a aplicação de backend (Spring Boot)
   - type: web
     name: dizzme-backend
     env: docker
-    dockerfilePath: Dockerfile # Caminho para o Dockerfile do backend
+    dockerfilePath: backend/Dockerfile
+    # ADICIONE O BLOCO envVars ABAIXO
+    envVars:
+      # 1. URL completa de conexão, garantindo o prefixo 'jdbc:'
+      - key: SPRING_DATASOURCE_URL
+        value: ${dizzme-postgres.JDBC_DATABASE_URL}
+      # 2. Credenciais de usuário
+      - key: SPRING_DATASOURCE_USERNAME
+        value: ${dizzme-postgres.user}
+      # 3. Credenciais de senha
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: ${dizzme-postgres.password}
 
-  # Serviço para a aplicação de frontend (Angular)
-  - type: web
-    name: dizzme-frontend
-    env: docker
-    dockerfilePath: Dockerfile # Caminho para o Dockerfile do frontend
-
-
-  # Serviço para o banco de dados PostgreSQL
-  - type: psql
-    name: dizzme-postgres
-    plan: starter # Plano de banco de dados, "starter" é bom para começar
+      # 4. Outras variáveis que sua aplicação precisa (JWT_SECRET, FRONTEND_URL, etc.)
+      # Mantenha as outras variáveis aqui (ou configure no Painel do Render)
+      - key: JWT_SECRET
+        sync: false # Indica que o valor será configurado no painel do Render
+      - key: FRONTEND_URL
+        sync: false # Indica que o valor será configurado no painel do Render
+      # ... adicione outras variáveis necessárias ...
