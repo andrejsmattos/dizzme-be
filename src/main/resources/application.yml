@@ -18,3 +18,8 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
+
+    spring:
+      # ... outras configurações ...
+      flyway:
+        enabled: false # Desabilita a inicialização e execução do Flyway
