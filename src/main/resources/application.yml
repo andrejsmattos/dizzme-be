@@ -7,13 +7,19 @@ spring:
   application:
     name: dizzme-platform
 
+  # Configuração de Datasource que usa as variáveis padrão injetadas pelo Render
   datasource:
-    url: ${DATABASE_URL}
+    # Render fornece a URL JDBC completa aqui.
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/dizzme}
+    # Opcional, mas mais robusto usar as variáveis separadas fornecidas pelo Render
+    username: ${DATABASE_USERNAME:dizzme_user}
+    password: ${DATABASE_PASSWORD:dizzme_pass}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      # Criar e dropar as tabelas automaticamente no banco novo.
+      ddl-auto: create-drop
     show-sql: false
     properties:
       hibernate:
@@ -31,7 +37,7 @@ spring:
       max-request-size: 10MB
 
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
 
 logging:
