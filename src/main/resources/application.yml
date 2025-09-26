@@ -1,49 +1,20 @@
-server:
-  port: 8080
-  servlet:
-    context-path: /api
+services:
+  - type: web
+    name: dizzme-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      # 1. Variáveis do Banco de Dados: O Render resolve as referências do Blueprint
+      #    e injeta a URL e as credenciais REAIS no ambiente do container.
+      - key: DATABASE_URL
+        value: ${dizzme-postgres.JDBC_DATABASE_URL}
+      - key: DATABASE_USERNAME
+        value: ${dizzme-postgres.user}
+      - key: DATABASE_PASSWORD
+        value: ${dizzme-postgres.password}
 
-spring:
-  application:
-    name: dizzme-platform
-  datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:dizzme}}
-    # O Render também fornece DATABASE_USERNAME e DATABASE_PASSWORD
-    username: ${DATABASE_USERNAME:${DB_USERNAME:dizzme_user}}
-    password: ${DATABASE_PASSWORD:${DB_PASSWORD:dizzme_pass}}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      # Criar e dropar as tabelas automaticamente no banco novo.
-      ddl-auto: create-drop
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-
-  security:
-    jwt:
-      secret: ${JWT_SECRET:dizzme-super-secret-key-for-jwt-tokens-2024}
-      expiration: 86400000 # 24 hours in milliseconds
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-
-  # Mantemos o Flyway desativado, pois ele estava causando o erro inicial no log.
-  flyway:
-    enabled: false
-    locations: classpath:db/migration
-
-logging:
-  level:
-    com.dizzme: INFO
-    org.springframework.security: DEBUG
-    org.springframework.web: INFO
-
-dizzme:
-  frontend:
-    url: ${FRONTEND_URL:http://localhost:4200}
+      # 2. Variáveis da Aplicação: São lidas do Painel do Render (Dashboard).
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
