@@ -1,47 +1,28 @@
-# Multi-stage build for Spring Boot application
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
+# Etapa 1: Build
+# Usa a imagem oficial do Maven com JDK para a etapa de build
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 
-# Set working directory
+# Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
-# Copy Maven configuration
+# Copia os arquivos de configuração do Maven
 COPY pom.xml .
+# Copia o código-fonte da aplicação
 COPY src ./src
 
-# Build the application
+# Executa o build da aplicação, pulando os testes para ser mais rápido
 RUN mvn clean package -DskipTests
 
-# Production stage
-FROM openjdk:21-jdk-slim
+# Etapa 2: Execução
+# Usa uma imagem leve do OpenJDK apenas com o JRE para a execução
+FROM openjdk:17-jre-slim
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
-# Create app directory and user
-RUN groupadd -r dizzme && useradd -r -g dizzme dizzme
-WORKDIR /app
-
-# Create uploads directory
-RUN mkdir -p uploads && chown -R dizzme:dizzme /app
-
-# Copy built JAR from builder stage
-COPY --from=builder /app/target/dizzme-platform-*.jar app.jar
-
-# Change ownership
-RUN chown -R dizzme:dizzme /app
-
-# Switch to non-root user
-USER dizzme
-
-# Expose port
+# Expõe a porta que a aplicação Spring Boot irá usar
 EXPOSE 8080
 
-# Set JVM options for containerized environment
-ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC -XX:+UseContainerSupport"
+# Define o ponto de entrada, copiando o JAR da etapa de build
+# Certifique-se de que o nome do JAR aqui corresponde ao nome no seu `pom.xml`
+COPY --from=build /app/target/dizzme-platform-*.jar app.jar
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/api/health || exit 1
-
-# Run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Comando para rodar a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
