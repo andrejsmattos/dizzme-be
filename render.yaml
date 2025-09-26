@@ -4,7 +4,20 @@ services:
     env: docker
     dockerfilePath: backend/Dockerfile
     envVars:
+      # 1. Configurações do Banco de Dados usando as variáveis de referência do Render
+      #    Isso força o Render a injetar os valores reais no container.
+      - key: DB_HOST
+        value: ${dizzme-postgres.host}
+      - key: DB_PORT
+        value: ${dizzme-postgres.port}
+      - key: DB_NAME
+        value: ${dizzme-postgres.database}
+      - key: DB_USERNAME
+        value: ${dizzme-postgres.user}
+      - key: DB_PASSWORD
+        value: ${dizzme-postgres.password}
 
+      # 2. Variáveis de Aplicação (sempre configuradas no Painel)
       - key: JWT_SECRET
         sync: false
       - key: FRONTEND_URL
