@@ -6,13 +6,9 @@ server:
 spring:
   application:
     name: dizzme-platform
-
-  # Configuração de Datasource usando variáveis de ambiente separadas para maior robustez.
-  # Você deve configurar DB_HOST, DB_PORT e DB_NAME no Render.
   datasource:
-    # URL construída explicitamente com o prefixo JDBC correto.
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:dizzme}
-    # Usamos DATABASE_USERNAME/PASSWORD se o Render injetá-los, senão usamos DB_USERNAME/DB_PASSWORD
+    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:dizzme}}
+    # O Render também fornece DATABASE_USERNAME e DATABASE_PASSWORD
     username: ${DATABASE_USERNAME:${DB_USERNAME:dizzme_user}}
     password: ${DATABASE_PASSWORD:${DB_PASSWORD:dizzme_pass}}
     driver-class-name: org.postgresql.Driver

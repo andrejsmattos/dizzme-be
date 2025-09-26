@@ -8,20 +8,14 @@ services:
   - type: web
     name: dizzme-backend
     env: docker
-    dockerfilePath: backend/Dockerfile # Caminho para o Dockerfile do backend
-    # O Render usa a porta 80, 443 por padrão para expor o serviço
-    # Não precisa de `ports` ou `EXPOSE`
-    # O Render automaticamente mapeia as variáveis de ambiente
-    # definidas no painel do Blueprint para este serviço.
+    dockerfilePath: Dockerfile # Caminho para o Dockerfile do backend
 
   # Serviço para a aplicação de frontend (Angular)
   - type: web
     name: dizzme-frontend
     env: docker
-    dockerfilePath: frontend/Dockerfile # Caminho para o Dockerfile do frontend
-    # Este serviço servirá os arquivos estáticos do Angular
-    # Você não precisa expor a porta 80 aqui, o Render fará isso
-    # automaticamente e o roteamento será tratado por ele.
+    dockerfilePath: Dockerfile # Caminho para o Dockerfile do frontend
+
 
   # Serviço para o banco de dados PostgreSQL
   - type: psql
