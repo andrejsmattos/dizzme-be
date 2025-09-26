@@ -1,5 +1,6 @@
-# Etapa 1: Build - Usa uma imagem Maven com JDK
-FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
+# Etapa 1: Build - Usa uma imagem Maven com JDK 21
+# Mudança: 'eclipse-temurin-17' foi alterado para 'eclipse-temurin-21'
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -12,9 +13,9 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # ----------------------------------------------------
-# Etapa 2: Execução - Imagem de Produção Leve
-# CORREÇÃO: Usando eclipse-temurin, que é estável e leve para o JRE
-FROM eclipse-temurin:17-jre-jammy
+# Etapa 2: Execução - Imagem de Produção Leve com JRE 21
+# Mudança: Usando eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 
 # Expõe a porta que a aplicação Spring Boot irá usar
 EXPOSE 8080
