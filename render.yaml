@@ -1,29 +1,11 @@
-# render.yaml
-
 services:
-  # ... (dizzme-postgres service aqui)
-
-  # Serviço para a aplicação de backend (Spring Boot)
   - type: web
     name: dizzme-backend
     env: docker
     dockerfilePath: backend/Dockerfile
-    # ADICIONE O BLOCO envVars ABAIXO
     envVars:
-      # 1. URL completa de conexão, garantindo o prefixo 'jdbc:'
-      - key: SPRING_DATASOURCE_URL
-        value: ${dizzme-postgres.JDBC_DATABASE_URL}
-      # 2. Credenciais de usuário
-      - key: SPRING_DATASOURCE_USERNAME
-        value: ${dizzme-postgres.user}
-      # 3. Credenciais de senha
-      - key: SPRING_DATASOURCE_PASSWORD
-        value: ${dizzme-postgres.password}
 
-      # 4. Outras variáveis que sua aplicação precisa (JWT_SECRET, FRONTEND_URL, etc.)
-      # Mantenha as outras variáveis aqui (ou configure no Painel do Render)
       - key: JWT_SECRET
-        sync: false # Indica que o valor será configurado no painel do Render
+        sync: false
       - key: FRONTEND_URL
-        sync: false # Indica que o valor será configurado no painel do Render
-      # ... adicione outras variáveis necessárias ...
+        sync: false
