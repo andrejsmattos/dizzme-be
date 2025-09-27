@@ -30,14 +30,14 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       # Alterar essas variáveis com os dados do seu projeto Supabase
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db.swjsmsjkkyrutscfaqbw.supabase.co:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_URL: ${DATABASE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DATABASE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATABASE_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: dizzme-super-secret-key-for-jwt-tokens-2024-docker
+      JWT_SECRET: ${JWT_SECRET:dizzme-super-secret-key-for-jwt-tokens-2024-docker}
       FRONTEND_URL: http://localhost:4200
-      CORS_ORIGINS: http://localhost:4200,http://localhost:3000
+      CORS_ORIGINS: ${FRONTEND_URL},http://localhost:3000,http://127.0.0.1:4200
     ports:
       - "8081:8080" # Alterado de 8080 para 8081
     depends_on:
