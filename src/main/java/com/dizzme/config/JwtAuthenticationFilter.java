@@ -39,14 +39,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${security.test.user.role:USER}")
     private String testUserRole;
 
+    // Lista de URLs públicas que NÃO precisam de autenticação
+    private static final List<String> PUBLIC_URLS = Arrays.asList(
+            "/api/health",
+            "/api/health/version",
+            "/actuator/health",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/create-admin",
+            "/api/responses/submit"
+    );
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        logger.info("Processing request: {} {}");
-        logger.info("JWT enabled: {}");
+        String path = request.getRequestURI();
+        logger.info("Processing request: " + request.getMethod() + " " + path);
+        logger.info("JWT enabled: " + jwtEnabled);
+
+        // Permitir acesso direto a URLs públicas SEM validação de JWT
+        if (isPublicUrl(path)) {
+            logger.info("Public URL detected, skipping JWT validation: " + path);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Se JWT estiver desabilitado, configura um usuário de teste e continua
         if (!jwtEnabled) {
@@ -76,11 +95,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                logger.error("Cannot set user authentication: {}", e);
+                logger.error("Cannot set user authentication: " + e.getMessage());
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Verifica se a URL é pública e não requer autenticação
+     */
+    private boolean isPublicUrl(String path) {
+        // Verifica URLs exatas
+        if (PUBLIC_URLS.contains(path)) {
+            return true;
+        }
+
+        // Verifica padrões com wildcard
+        if (path.startsWith("/api/surveys/public/") ||
+                path.startsWith("/api/qr/")) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -97,8 +134,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            logger.info("JWT disabled - Using test authentication for user: {} with role: {}"
-            );
+            logger.info("JWT disabled - Using test authentication for user: " + testUserEmail +
+                    " with role: " + testUserRole);
         }
     }
 
