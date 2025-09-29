@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:3000"})
 @PreAuthorize("isAuthenticated()")
 public class ClientController {
 
