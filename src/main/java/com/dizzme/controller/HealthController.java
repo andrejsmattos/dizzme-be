@@ -1,23 +1,40 @@
 package com.dizzme.controller;
 
-import com.dizzme.dto.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/health")
 public class HealthController {
 
     @GetMapping
-    public ResponseEntity<ApiResponse<String>> healthCheck() {
-        return ResponseEntity.ok(ApiResponse.success("Dizzme API is running", "OK"));
+    public ResponseEntity<Map<String, Object>> healthCheck() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "UP");
+        response.put("application", "Dizzme API");
+        response.put("timestamp", System.currentTimeMillis());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/version")
-    public ResponseEntity<ApiResponse<String>> version() {
-        return ResponseEntity.ok(ApiResponse.success("1.0.0"));
+    public ResponseEntity<Map<String, String>> version() {
+        Map<String, String> response = new HashMap<>();
+        response.put("version", "1.0.0");
+        response.put("application", "dizzme-platform");
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Endpoint alternativo sem /api no path para testes
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
     }
 }
