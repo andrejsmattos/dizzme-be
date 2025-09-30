@@ -14,17 +14,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns(
-                        "http://localhost:*",
-                        "https://localhost:*",
-                        "https://*.onrender.com",  // Permite todos os subdomínios do Render
-                        frontendUrl                 // URL específica do frontend
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+//        registry.addMapping("/**")
+//                .allowedOriginPatterns(
+//                        "http://localhost:*",
+//                        "https://localhost:*",
+//                        "https://*.onrender.com",  // Permite todos os subdomínios do Render
+//                        frontendUrl                 // URL específica do frontend
+//                )
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(true)
+//                .maxAge(3600);
     }
 
     @Override
