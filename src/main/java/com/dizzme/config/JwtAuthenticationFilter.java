@@ -28,27 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private ClientRepository clientRepository;
 
-    // Propriedade para controlar se JWT está habilitado
     @Value("${security.jwt.enabled:true}")
     private boolean jwtEnabled;
 
-    // Email e role padrão para testes (quando JWT está desabilitado)
     @Value("${security.test.user.email:test@dizzme.com}")
     private String testUserEmail;
 
     @Value("${security.test.user.role:USER}")
     private String testUserRole;
-
-    // Lista de URLs públicas que NÃO precisam de autenticação
-    private static final List<String> PUBLIC_URLS = Arrays.asList(
-            "/api/health",
-            "/api/health/version",
-            "/actuator/health",
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/create-admin",
-            "/api/responses/submit"
-    );
 
     @Override
     protected void doFilterInternal(
@@ -84,7 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = decodedJWT.getClaim("role").asString();
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Create authorities based on role
                     List<SimpleGrantedAuthority> authorities = Arrays.asList(
                             new SimpleGrantedAuthority("ROLE_" + role)
                     );
@@ -102,34 +88,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getServletPath();
-
-        if (PUBLIC_URLS.contains(path)) {
-            return true;
-        }
-
-        if (path.startsWith("/api/surveys/public/") ||
-                path.startsWith("/api/qr/")) {
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * Verifica se a URL é pública e não requer autenticação
+     * Remove o prefixo /api se existir para normalizar o path
      */
     private boolean isPublicUrl(String path) {
+        // Remove o prefixo /api se existir (devido ao context-path)
+        String normalizedPath = path.startsWith("/api") ? path.substring(4) : path;
+
+        // Lista de paths públicos (sem o prefixo /api)
+        List<String> publicPaths = Arrays.asList(
+                "/health",
+                "/health/version",
+                "/actuator/health",
+                "/auth/login",
+                "/auth/register",
+                "/auth/create-admin",
+                "/responses/submit"
+        );
+
         // Verifica URLs exatas
-        if (PUBLIC_URLS.contains(path)) {
+        if (publicPaths.contains(normalizedPath)) {
             return true;
         }
 
         // Verifica padrões com wildcard
-        if (path.startsWith("/api/surveys/public/") ||
-                path.startsWith("/api/qr/")) {
+        if (normalizedPath.startsWith("/surveys/public/") ||
+                normalizedPath.startsWith("/qr/")) {
             return true;
         }
 
