@@ -10,17 +10,28 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
+
 @Service
-public class ClientService {
+public class ClientService implements UserDetailsService {
 
     @Autowired
     private ClientRepository clientRepository;
 
     @Autowired
     private SurveyRepository surveyRepository;
+
+    // ----------------- Métodos de negócio já existentes -----------------
 
     public ClientDto getCurrentClient() throws BusinessException {
         Long clientId = getCurrentClientId();
@@ -73,5 +84,26 @@ public class ClientService {
         return clientRepository.findByEmail(email)
                 .map(Client::getId)
                 .orElseThrow(() -> new BusinessException("Cliente não encontrado"));
+    }
+
+    // ----------------- Implementação do UserDetailsService -----------------
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
+
+        return new User(
+                client.getEmail(),
+                client.getPasswordHash(),
+                getAuthorities(client)
+        );
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthorities(Client client) {
+        if (client.getRole() != null) {
+            return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + client.getRole().name()));
+        }
+        return Collections.emptyList();
     }
 }
