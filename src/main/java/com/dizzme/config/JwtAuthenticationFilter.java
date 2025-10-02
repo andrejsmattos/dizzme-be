@@ -116,22 +116,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Remove o prefixo /api se existir para normalizar o path
      */
     private boolean isPublicUrl(String path) {
-        String normalizedPath = path;
-        while (normalizedPath.startsWith("/api")) {
-            normalizedPath = normalizedPath.substring(4);
-        }
-
         List<String> publicPaths = Arrays.asList(
+                "/api/health",
+                "/api/auth/login",
+                "/api/auth/register",
+                "/api/auth/create-admin",
+                "/api/responses/submit",
                 "/health",
                 "/auth/login",
                 "/auth/register",
                 "/auth/create-admin",
                 "/responses/submit"
         );
-        return publicPaths.contains(normalizedPath)
-                || normalizedPath.startsWith("/surveys/public/")
-                || normalizedPath.startsWith("/qr/");
 
+        return publicPaths.contains(path)
+                || path.startsWith("/api/surveys/public/")
+                || path.startsWith("/api/qr/")
+                || path.startsWith("/surveys/public/")
+                || path.startsWith("/qr/");
     }
 
     /**

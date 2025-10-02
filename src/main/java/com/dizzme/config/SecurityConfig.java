@@ -40,16 +40,19 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/health",
-                                "/health",
+                                "/api/actuator/**",
                                 "/actuator/health",
                                 "/api/responses/submit",
                                 "/api/surveys/public/**",
-                                "/api/qr/**"
-                        )
-                        .permitAll()
+                                "/api/qr/**",
+                                "/auth/**",
+                                "/health"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -58,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(clientService); // ✅ Usa o ClientService atualizado
+        provider.setUserDetailsService(clientService); // usa o ClientService como UserDetailsService
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
