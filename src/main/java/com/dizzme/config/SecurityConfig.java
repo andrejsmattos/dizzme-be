@@ -36,9 +36,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/health",
+                                "/health",
+                                "/actuator/health",
                                 "/api/responses/submit",
                                 "/api/surveys/public/**",
-                                "/api/qr/**")
+                                "/api/qr/**"
+                        )
                         .permitAll()
                         .anyRequest().authenticated()
                 )
