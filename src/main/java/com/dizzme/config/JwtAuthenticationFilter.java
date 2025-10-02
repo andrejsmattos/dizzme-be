@@ -62,15 +62,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (isPublicUrl(normalizedPath)) {
             logger.info("Public URL detected, skipping JWT validation: {}", path);
 
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                AnonymousAuthenticationToken anonymousAuth =
-                        new AnonymousAuthenticationToken(
-                                "anonymousUser",
-                                "anonymousUser",
-                                AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
-                        );
-                SecurityContextHolder.getContext().setAuthentication(anonymousAuth);
-            }
+//            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+//                AnonymousAuthenticationToken anonymousAuth =
+//                        new AnonymousAuthenticationToken(
+//                                "anonymousUser",
+//                                "anonymousUser",
+//                                AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
+//                        );
+//                SecurityContextHolder.getContext().setAuthentication(anonymousAuth);
+//            }
 
             filterChain.doFilter(request, response);
             return;
