@@ -14,8 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOriginPatterns(
+        registry.addMapping("/**")
+                .allowedOrigins(
                         "http://localhost:*",             // dev local
                         "https://localhost:*",            // dev https local
                         "https://dizzme-fe.onrender.com", // frontend no Render
