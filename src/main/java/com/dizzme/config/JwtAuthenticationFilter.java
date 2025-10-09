@@ -1,6 +1,7 @@
 package com.dizzme.config;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dizzme.entity.Client;
 import com.dizzme.repository.ClientRepository;
 import com.dizzme.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -83,26 +84,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-// URLs protegidas - requer JWT válido
+        // URLs protegidas - requer JWT válido
         try {
             String token = getTokenFromRequest(request);
 
             if (token != null) {
                 DecodedJWT decodedJWT = jwtService.validateToken(token);
                 String email = decodedJWT.getSubject();
+                Long clientId = decodedJWT.getClaim("id").asLong();
 
-                var client = clientRepository.findByEmail(email)
-                        .orElseThrow(() -> new RuntimeException("Client not found"));
+                Client client = clientRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("Client not found: " + email));
 
                 List<SimpleGrantedAuthority> authorities = Arrays.asList(
                         new SimpleGrantedAuthority("ROLE_" + client.getRole().name())
                 );
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(client, null, authorities);
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                logger.info("JWT validated successfully for user: {}", email);
+                logger.info("JWT validated successfully for user: {} (id: {})", email, clientId);
             }
         } catch (Exception e) {
             logger.error("JWT validation failed: {}", e.getMessage());
