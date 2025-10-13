@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         logger.debug("Normalized path: {}", normalizedPath);
 
         // URLs públicas - permite acesso sem JWT
-        if (isPublicUrl(normalizedPath)) {
+        if (isPublicUrl(path) || isPublicUrl(normalizedPath)) {
             logger.info("Public URL detected, skipping JWT validation: {}", path);
 
 //            if (SecurityContextHolder.getContext().getAuthentication() == null) {
