@@ -137,7 +137,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.startsWith("/surveys/public/")
                 || path.startsWith("/qr/")
                 || path.matches("^/api/qr/survey/.*$")
-                || path.matches("^/qr/survey/.*$");;
+                || path.matches("^/qr/survey/.*$");
     }
 
     /**
