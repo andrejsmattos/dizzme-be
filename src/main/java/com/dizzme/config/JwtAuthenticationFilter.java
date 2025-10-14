@@ -131,14 +131,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/responses/submit"
         );
 
-        return publicPaths.contains(path)
-                || path.startsWith("/api/surveys/public/")
-                || path.startsWith("/api/qr/")
-                || path.startsWith("/surveys/public/")
-                || path.startsWith("/qr/")
-                || path.matches("^/api/qr/survey/.*$")
-                || path.matches("^/qr/survey/.*$");
+        // ✅ Normaliza o path (remove prefixos e múltiplas barras)
+        String normalizedPath = path.replaceAll("//+", "/").toLowerCase();
+
+        // ✅ Checa por correspondência exata e padrões flexíveis
+        return publicPaths.contains(normalizedPath)
+                || normalizedPath.contains("/qr/")                    // cobre qualquer rota que tenha /qr/
+                || normalizedPath.contains("/surveys/public/")        // cobre /api/surveys/public/*
+                || normalizedPath.contains("/responses/submit")       // cobre /api/responses/submit
+                || normalizedPath.endsWith("/health")
+                || normalizedPath.matches(".*(/qr|/public|/health).*"); // fallback adicional
     }
+
 
     /**
      * Configura uma autenticação de teste quando JWT está desabilitado
