@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-
+        logger.info("Incoming request path: {}", request.getRequestURI());
         String path = request.getRequestURI();
         logger.info("Processing request: {} {}", request.getMethod(), path);
         logger.info("JWT enabled: {}", jwtEnabled);
@@ -118,30 +118,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * Remove o prefixo /api se existir para normalizar o path
      */
     private boolean isPublicUrl(String path) {
+        // 🔧 Normaliza o path (remove duplicações e coloca em minúsculo)
+        String normalizedPath = path.replaceAll("//+", "/").toLowerCase();
+
+        // 🔓 Rotas explicitamente públicas
         List<String> publicPaths = Arrays.asList(
                 "/api/health",
+                "/health",
                 "/api/auth/login",
                 "/api/auth/register",
                 "/api/auth/create-admin",
-                "/api/responses/submit",
-                "/health",
                 "/auth/login",
                 "/auth/register",
                 "/auth/create-admin",
+                "/api/responses/submit",
                 "/responses/submit"
         );
 
-        // ✅ Normaliza o path (remove prefixos e múltiplas barras)
-        String normalizedPath = path.replaceAll("//+", "/").toLowerCase();
+        // ✅ Libera rotas exatas
+        if (publicPaths.contains(normalizedPath)) {
+            return true;
+        }
 
-        // ✅ Checa por correspondência exata e padrões flexíveis
-        return publicPaths.contains(normalizedPath)
-                || normalizedPath.contains("/qr/")                    // cobre qualquer rota que tenha /qr/
-                || normalizedPath.contains("/surveys/public/")        // cobre /api/surveys/public/*
-                || normalizedPath.contains("/responses/submit")       // cobre /api/responses/submit
-                || normalizedPath.endsWith("/health")
-                || normalizedPath.matches(".*(/qr|/public|/health).*"); // fallback adicional
+        // ✅ Libera padrões conhecidos
+        return normalizedPath.matches("^(/api)?/qr/.*$")
+                || normalizedPath.matches("^(/api)?/surveys/public/.*$")
+                || normalizedPath.matches("^(/api)?/responses/submit$")
+                || normalizedPath.matches("^(/api)?/health$")
+                || normalizedPath.matches("^(/api)?/actuator/.*$");
     }
+
 
 
     /**

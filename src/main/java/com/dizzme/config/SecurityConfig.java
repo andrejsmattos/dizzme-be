@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/api/surveys/public/**",
                                 "/api/qr/**",
                                 "/auth/**",
-                                "/health"
+                                "/health",
+                                "/qr/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
