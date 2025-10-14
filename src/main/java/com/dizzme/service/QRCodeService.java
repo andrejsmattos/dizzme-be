@@ -6,6 +6,7 @@ import com.dizzme.repository.QRCodeRepository;
 import com.google.zxing.Writer;
 import com.google.zxing.common.BitMatrix;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -18,6 +19,9 @@ public class QRCodeService {
 
     @Autowired
     private QRCodeRepository qrCodeRepository;
+
+    @Value("${dizzme.frontend.url:https://dizzme-fe.onrender.com}")
+    private String frontendUrl;
 
     public QRCodeResponse generateQRCode(String url, Integer size) throws BusinessException {
         try {
@@ -47,7 +51,8 @@ public class QRCodeService {
     }
 
     public QRCodeResponse generateSurveyQRCode(String surveyPublicId, Integer size) throws BusinessException {
-        String url = "http://localhost:4200/survey/" + surveyPublicId;
+        // ✅ agora usa o frontend configurado dinamicamente
+        String url = String.format("%s/survey/%s", frontendUrl, surveyPublicId);
         return generateQRCode(url, size != null ? size : 300);
     }
 }
