@@ -10,9 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -114,14 +112,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Verifica se a URL é pública e não requer autenticação
-     * Remove o prefixo /api se existir para normalizar o path
+     * Verifica se a URL é pública e não requer autenticação JWT.
+     * Normaliza o path e cobre todos os endpoints públicos (auth, qr, surveys públicos, respostas, health, etc.)
      */
     private boolean isPublicUrl(String path) {
-        // 🔧 Normaliza o path (remove duplicações e coloca em minúsculo)
+        if (path == null) return false;
+
+        // 🔧 Normaliza o path (remove barras duplicadas e converte para minúsculas)
         String normalizedPath = path.replaceAll("//+", "/").toLowerCase();
 
-        // 🔓 Rotas explicitamente públicas
+        // 🔓 Rotas explicitamente públicas (login, registro, health etc.)
         List<String> publicPaths = Arrays.asList(
                 "/api/health",
                 "/health",
@@ -131,24 +131,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/auth/login",
                 "/auth/register",
                 "/auth/create-admin",
-                "/api/responses/submit",
-                "/responses/submit"
+                "/api/actuator/health",
+                "/actuator/health"
         );
 
-        // ✅ Libera rotas exatas
+        // ✅ Libera rotas exatas conhecidas
         if (publicPaths.contains(normalizedPath)) {
             return true;
         }
 
-        // ✅ Libera padrões conhecidos
-        return normalizedPath.matches("^(/api)?/qr/.*$")
-                || normalizedPath.matches("^(/api)?/surveys/public/.*$")
-                || normalizedPath.matches("^(/api)?/responses/submit$")
-                || normalizedPath.matches("^(/api)?/health$")
-                || normalizedPath.matches("^(/api)?/actuator/.*$");
+        // ✅ Libera padrões comuns (com ou sem prefixo /api)
+        return normalizedPath.matches("^(/api)?/qr(/.*)?$")
+                || normalizedPath.matches("^(/api)?/surveys/public(/.*)?$")
+                || normalizedPath.matches("^(/api)?/responses/submit(/.*)?$")
+                || normalizedPath.matches("^(/api)?/health(/.*)?$")
+                || normalizedPath.matches("^(/api)?/actuator(/.*)?$");
     }
-
-
 
     /**
      * Configura uma autenticação de teste quando JWT está desabilitado
