@@ -54,6 +54,7 @@ public class SurveyController {
     }
 
     @GetMapping("/public/{publicId}")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<SurveyDto>> getPublicSurvey(@PathVariable String publicId) {
         try {
             SurveyDto survey = surveyService.getPublicSurvey(publicId);
