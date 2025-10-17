@@ -5,6 +5,8 @@ import com.dizzme.exception.BusinessException;
 import com.dizzme.repository.QRCodeRepository;
 import com.google.zxing.Writer;
 import com.google.zxing.common.BitMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.Base64;
 
 @Service
 public class QRCodeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(QRCodeService.class);
 
     @Autowired
     private QRCodeRepository qrCodeRepository;
@@ -53,6 +57,7 @@ public class QRCodeService {
     public QRCodeResponse generateSurveyQRCode(String surveyPublicId, Integer size) throws BusinessException {
         // ✅ agora usa o frontend configurado dinamicamente
         String url = String.format("%s/survey/%s", frontendUrl, surveyPublicId);
+        logger.info("Generated QR code for survey {} -> {}", surveyPublicId, url);
         return generateQRCode(url, size != null ? size : 300);
     }
 }

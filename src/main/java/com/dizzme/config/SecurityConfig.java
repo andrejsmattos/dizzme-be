@@ -72,7 +72,7 @@ public class SecurityConfig {
                 "https://dizzme-fe.onrender.com",
                 "http://localhost:4200"
         ));
-        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

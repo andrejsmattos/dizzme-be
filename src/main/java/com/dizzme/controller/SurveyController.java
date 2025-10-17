@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/surveys")
+@RequestMapping("/api/surveys")
 public class SurveyController {
 
     @Autowired
@@ -54,7 +54,6 @@ public class SurveyController {
     }
 
     @GetMapping("/public/{publicId}")
-    @PreAuthorize("permitAll()")
     public ResponseEntity<ApiResponse<SurveyDto>> getPublicSurvey(@PathVariable String publicId) {
         try {
             SurveyDto survey = surveyService.getPublicSurvey(publicId);
