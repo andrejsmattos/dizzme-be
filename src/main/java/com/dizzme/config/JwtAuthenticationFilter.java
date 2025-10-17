@@ -43,12 +43,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
+        // ✅ Ignora requisições preflight (CORS)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            logger.debug("Skipping JWT validation for preflight (OPTIONS) request");
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
         logger.info("Incoming request path: {}", request.getRequestURI());
         String path = request.getRequestURI();
         logger.info("Processing request: {} {}", request.getMethod(), path);
@@ -60,17 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // URLs públicas - permite acesso sem JWT
         if (isPublicUrl(path) || isPublicUrl(normalizedPath)) {
             logger.info("Public URL detected, skipping JWT validation: {}", path);
-
-//            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-//                AnonymousAuthenticationToken anonymousAuth =
-//                        new AnonymousAuthenticationToken(
-//                                "anonymousUser",
-//                                "anonymousUser",
-//                                AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
-//                        );
-//                SecurityContextHolder.getContext().setAuthentication(anonymousAuth);
-//            }
-
             filterChain.doFilter(request, response);
             return;
         }
@@ -113,15 +109,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * Verifica se a URL é pública e não requer autenticação JWT.
-     * Normaliza o path e cobre todos os endpoints públicos (auth, qr, surveys públicos, respostas, health, etc.)
      */
     private boolean isPublicUrl(String path) {
         if (path == null) return false;
 
-        // 🔧 Normaliza o path (remove barras duplicadas e converte para minúsculas)
         String normalizedPath = path.replaceAll("//+", "/").toLowerCase();
 
-        // 🔓 Rotas explicitamente públicas (login, registro, health etc.)
         List<String> publicPaths = Arrays.asList(
                 "/api/health",
                 "/health",
@@ -135,12 +128,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/actuator/health"
         );
 
-        // ✅ Libera rotas exatas conhecidas
         if (publicPaths.contains(normalizedPath)) {
             return true;
         }
 
-        // ✅ Libera padrões comuns (com ou sem prefixo /api)
         return normalizedPath.matches("^(/api)?/qr(/.*)?$")
                 || normalizedPath.matches("^(/api)?/surveys/public(/.*)?$")
                 || normalizedPath.matches("^(/api)?/responses/submit(/.*)?$")
@@ -149,7 +140,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Configura uma autenticação de teste quando JWT está desabilitado
+     * Configura uma autenticação de teste quando JWT está desabilitado.
      */
     private void setTestAuthentication() {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
